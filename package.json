@@ -1,6 +1,6 @@
 {
     "name": "good-reporter",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "repository": "git://github.com/hapijs/good-reporter",
     "description": "Good reporter interface",
     "main": "index.js",
@@ -10,10 +10,10 @@
     "author": "Adam Bretz",
     "license": "ISC",
     "dependencies": {
-        "hoek": "^2.4.1"
+        "hoek": "~2.4.x"
     },
     "devDependencies": {
-        "lab": "^4.3.0"
+        "lab": "~4.3.x"
     },
     "engines": {
         "node": ">=0.10.x"
