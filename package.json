@@ -1,6 +1,6 @@
 {
     "name": "good-reporter",
-    "version": "0.0.3",
+    "version": "1.0.0",
     "repository": "git://github.com/hapijs/good-reporter",
     "description": "Good reporter interface",
     "main": "index.js",
