@@ -15,9 +15,9 @@ This is an abstraction module for implementing reporters for the [good](https://
 
 creates a new GoodReporter object with the following arguments
 - `[options]` - optional arguments object
-	- `[events]` - an object of key value paris. Defaults to `{ request: [], log: [] }`.
+	- `[events]` - an object of key value paris. Defaults to `{ request: "*", log: "*" }` meaning `request` and `log` events with no tag filtering.
 		- `key` - one of ("request", "log", "error", or "ops") indicating the hapi event to subscribe to
-		- `value` - an array of tags to filter incomming events. An empty array indicates no filtering.
+		- `value` - an array of tags to filter incoming events. "*" indicates no filtering.
 
 ### `GoodReporter` methods
 - `start(callback)` - starts the reporter. Any "run once" logic should be in the start method. For example, creating a database connection.

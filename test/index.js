@@ -10,165 +10,193 @@ var expect = Lab.expect;
 
 describe('good-reporter', function () {
 
-	it('throws an error without using new', function(done) {
+    it('throws an error without using new', function(done) {
 
-		expect(function() {
+        expect(function() {
 
-			var reporter = GoodReporter();
-		}).to.throw('GoodReporter must be created with new');
+            var reporter = GoodReporter();
+        }).to.throw('GoodReporter must be created with new');
 
-		done();
-	});
+        done();
+    });
 
-	it('provides a start function', function (done) {
+    it('provides a start function', function (done) {
 
-		var reporter = new GoodReporter();
-		expect(reporter.start).to.exist;
+        var reporter = new GoodReporter();
+        expect(reporter.start).to.exist;
 
-		reporter.start(function (error) {
-			expect(error).to.not.exist;
-			done();
-		});
-	});
+        reporter.start(function (error) {
 
-	it('provides a stop function', function (done) {
+            expect(error).to.not.exist;
+            done();
+        });
+    });
 
-		var reporter = new GoodReporter();
-		expect(reporter.stop).to.exist;
+    it('provides a stop function', function (done) {
 
-		reporter.stop(function (error) {
-			expect(error).to.not.exist;
-			done();
-		});
-	});
+        var reporter = new GoodReporter();
+        expect(reporter.stop).to.exist;
 
-	it('converts falsy values to empty tag arrays', function (done) {
+        reporter.stop(function (error) {
 
-		var reporter = new GoodReporter({
-			events: {
-				error: null
-			}
-		});
+            expect(error).to.not.exist;
+            done();
+        });
+    });
 
-		expect(reporter._events.error).to.deep.equal([]);
-		done();
-	});
+    it('converts non-array values to empty tag arrays', function (done) {
 
-	describe('#_filter', function () {
+        var tagValues = [null, '*', 'none', 5];
 
-		it('returns true if this reporter should report this event type', function (done) {
+        for (var i = 0, il = tagValues.length; i < il; ++i) {
+            var tag = tagValues[i];
 
-			var reporter = new GoodReporter();
+            var reporter = new GoodReporter({
+                events: {
+                    error: tag
+                }
+            });
 
-			expect(reporter._filter('log', {
-				tags: ['request', 'server', 'error', 'hapi']
-			})).to.equal(true);
+            expect(reporter._events.error).to.deep.equal([]);
+        }
 
-			done();
-		});
+        done();
+    });
 
-		it('returns false if this report should not report this event type', function (done) {
+    describe('#_filter', function () {
 
-			var reporter = new GoodReporter();
+        it('returns true if this reporter should report this event type', function (done) {
 
-			expect(reporter._filter('ops', {
-				tags: []
-			})).to.equal(false);
+            var reporter = new GoodReporter();
 
-			done();
-		});
+            expect(reporter._filter('log', {
+                tags: ['request', 'server', 'error', 'hapi']
+            })).to.equal(true);
 
-		it('returns true if the event is matched, but there are not any tags with the data', function (done) {
+            done();
+        });
 
-			var reporter = new GoodReporter();
-			expect(reporter._filter('log', {
-				tags:[]
-			})).to.equal(true);
+        it('returns false if this report should not report this event type', function (done) {
 
-			done();
-		});
+            var reporter = new GoodReporter();
 
-		it('returns false if the event is not matched', function (done) {
+            expect(reporter._filter('ops', {
+                tags: '*'
+            })).to.equal(false);
 
-			var reporter = new GoodReporter();
-			expect(reporter._filter('ops', {
-				tags:[]
-			})).to.equal(false);
+            done();
+        });
 
-			done();
-		});
+        it('returns true if the event is matched, but there are not any tags with the data', function (done) {
 
-		it('returns false if the subscriber has tags, but the matched event does not have any', function (done) {
+            var reporter = new GoodReporter();
+            expect(reporter._filter('log', {
+                tags:[]
+            })).to.equal(true);
 
-			var reporter = new GoodReporter({
-				events: {
-					error: ['db']
-				}
-			});
+            done();
+        });
 
-			expect(reporter._filter('error', {
-				tags:[]
-			})).to.equal(false);
+        it('returns false if the event is not matched', function (done) {
 
-			done();
-		});
+            var reporter = new GoodReporter();
+            expect(reporter._filter('ops', {
+                tags:[]
+            })).to.equal(false);
 
-		it('returns true if the event and tag match', function (done) {
+            done();
+        });
 
-			var reporter = new GoodReporter({
-				events: {
-					'error': ['high', 'medium', 'log']
-				}
-			});
+        it('returns false if the subscriber has tags, but the matched event does not have any', function (done) {
 
-			expect(reporter._filter('error', {
-				tags: ['hapi', 'high', 'db', 'severe']
-			})).to.equal(true);
-			done();
-		});
+            var reporter = new GoodReporter({
+                events: {
+                    error: ['db']
+                }
+            });
 
-		it('returns false by defualt', function (done) {
+            expect(reporter._filter('error', {
+                tags:[]
+            })).to.equal(false);
 
-		   var reporter = new GoodReporter({
-			   events: {
-				   request: ['hapi']
-			   }
-		   });
+            done();
+        });
 
-			expect(reporter._filter('request',{})).to.equal(false);
-			done();
-		});
-	});
+        it('returns true if the event and tag match', function (done) {
 
-	describe('#queue', function () {
+            var reporter = new GoodReporter({
+                events: {
+                    'error': ['high', 'medium', 'log']
+                }
+            });
 
-		it('adds an item to the internal list if _filter returns true', function (done) {
+            expect(reporter._filter('error', {
+                tags: ['hapi', 'high', 'db', 'severe']
+            })).to.equal(true);
+            done();
+        });
 
-			var reporter = new GoodReporter({
-				events: {
-					'error': []
-				}
-			});
+        it('returns false by default', function (done) {
 
-			reporter.queue('error', { data: 'some event data'});
+           var reporter = new GoodReporter({
+               events: {
+                   request: ['hapi']
+               }
+           });
 
-			expect(reporter._eventQueue.length).to.equal(1);
-			done();
-		});
+            expect(reporter._filter('request',{})).to.equal(false);
+            done();
+        });
+    });
 
-		it('doe not add an item to the internal list if _filter returns false', function (done) {
+    describe('#queue', function () {
 
-			var reporter = new GoodReporter({
-				events: {
-					request: []
-				}
-			});
+        it('adds an item to the internal list if _filter returns true', function (done) {
 
-			reporter.queue('error', { data: 'some event data'});
+            var reporter = new GoodReporter({
+                events: {
+                    'error': '*'
+                }
+            });
 
-			expect(reporter._eventQueue.length).to.equal(0);
-			done();
-		});
+            reporter.queue('error', { data: 'some event data'});
 
-	});
+            expect(reporter._eventQueue.length).to.equal(1);
+            done();
+        });
+
+        it('doe not add an item to the internal list if _filter returns false', function (done) {
+
+            var reporter = new GoodReporter({
+                events: {
+                    request: '*'
+                }
+            });
+
+            reporter.queue('error', { data: 'some event data'});
+
+            expect(reporter._eventQueue.length).to.equal(0);
+            done();
+        });
+
+    });
+
+    describe('#report', function () {
+
+        it('throws an error if when called directly', function (done) {
+
+            var reporter = new GoodReporter({
+                events: {
+                    request: '*'
+                }
+            });
+
+            expect(function () {
+
+                reporter.report();
+            }).to.throw('Instance of GoodReporter must implement their own "report" function.');
+            done();
+        });
+
+    });
 });
