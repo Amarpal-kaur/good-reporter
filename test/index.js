@@ -165,7 +165,7 @@ describe('good-reporter', function () {
             done();
         });
 
-        it('doe not add an item to the internal list if _filter returns false', function (done) {
+        it('does not add an item to the internal list if _filter returns false', function (done) {
 
             var reporter = new GoodReporter({
                 events: {
@@ -173,12 +173,27 @@ describe('good-reporter', function () {
                 }
             });
 
-            reporter.queue('error', { data: 'some event data'});
+            reporter.queue('error', { data: 'some event data', timestamp: Date.now() });
 
             expect(reporter._eventQueue.length).to.equal(0);
             done();
         });
 
+        it('provides some default data if eventData.data is not present', function (done) {
+
+            var reporter = new GoodReporter({
+                events: {
+                    request: '*'
+                }
+            });
+
+            reporter.queue('request');
+
+            expect(reporter._eventQueue.length).to.equal(1);
+            expect(reporter._eventQueue[0].timestamp).to.exist;
+
+            done();
+        });
     });
 
     describe('#report', function () {
