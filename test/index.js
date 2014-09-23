@@ -4,8 +4,6 @@ var GoodReporter = require('..');
 
 var describe = lab.describe;
 var it = lab.it;
-var before = lab.before;
-var after = lab.after;
 var expect = Lab.expect;
 
 describe('good-reporter', function () {
@@ -63,7 +61,7 @@ describe('good-reporter', function () {
         done();
     });
 
-    describe('#_filter', function () {
+    describe('_filter()', function () {
 
         it('returns true if this reporter should report this event type', function (done) {
 
@@ -149,7 +147,7 @@ describe('good-reporter', function () {
         });
     });
 
-    describe('#queue', function () {
+    describe('queue()', function () {
 
         it('adds an item to the internal list if _filter returns true', function (done) {
 
@@ -180,7 +178,7 @@ describe('good-reporter', function () {
         });
     });
 
-    describe('#report', function () {
+    describe('report()', function () {
 
         it('throws an error if when called directly', function (done) {
 
