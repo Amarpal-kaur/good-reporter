@@ -157,7 +157,7 @@ describe('report()', function () {
         expect(function () {
 
             reporter._report();
-        }).to.throw('Instance of GoodReporter must implement their own "report" function.');
+        }).to.throw('Instance of GoodReporter must implement their own "_report" function.');
         done();
     });
 
