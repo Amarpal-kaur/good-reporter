@@ -6,25 +6,6 @@ var GoodReporter = require('..');
 var describe = lab.describe;
 var it = lab.it;
 var expect = Lab.expect;
-var beforeEach = lab.beforeEach;
-var afterEach = lab.afterEach;
-
-
-var ee;
-
-beforeEach(function (done) {
-
-    ee = new EventEmitter();
-    done();
-});
-
-afterEach(function (done) {
-
-    ee.removeAllListeners();
-    done();
-});
-
-
 
 it('throws an error without using new', function(done) {
 
@@ -39,6 +20,8 @@ it('throws an error without using new', function(done) {
 it('provides a start function', function (done) {
 
     var reporter = new GoodReporter();
+    var ee = new EventEmitter();
+
     expect(reporter.start).to.exist;
 
     reporter.start(ee, function (error) {
@@ -184,6 +167,7 @@ describe('_handleEvent()', function() {
 
     it('runs when a matching event is emitted', function (done) {
 
+        var ee = new EventEmitter();
         var reporter = new GoodReporter({
             events: {
                 request: '*',
@@ -244,6 +228,7 @@ describe('_handleEvent()', function() {
                 request: ['user']
             }
         });
+        var ee = new EventEmitter();
 
         reporter.report = function (event, eventData) {
 

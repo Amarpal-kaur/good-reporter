@@ -46,7 +46,7 @@ reporter.report = function (event, eventData) {
     if (event === 'request') {
         console.info(eventData.method);
     } else if (event === 'ops') {
-        console.info(JSON.parse(event));
+        console.info(JSON.parse(eventData));
     }
 };
 reporter.start(ee, function (err) {
