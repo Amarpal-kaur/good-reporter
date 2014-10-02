@@ -156,7 +156,7 @@ describe('report()', function () {
 
         expect(function () {
 
-            reporter.report();
+            reporter._report();
         }).to.throw('Instance of GoodReporter must implement their own "report" function.');
         done();
     });
@@ -196,7 +196,7 @@ describe('_handleEvent()', function() {
             }
         };
 
-        reporter.report = function (event, eventData) {
+        reporter._report = function (event, eventData) {
 
             expect(hash[i].name).to.equal(event);
             expect(hash[i].value).to.deep.equal(eventData);
@@ -230,7 +230,7 @@ describe('_handleEvent()', function() {
         });
         var ee = new EventEmitter();
 
-        reporter.report = function (event, eventData) {
+        reporter._report = function (event, eventData) {
 
             throw new Error('report called.');
         };

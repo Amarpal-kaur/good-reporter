@@ -22,9 +22,9 @@ creates a new GoodReporter object with the following arguments
 ### `GoodReporter` methods
 - `start(eventemitter, callback)` - starts the reporter and registers for the correct events emitted by the supplied event emitter. Any "run once" logic should be in the start method. For example, creating a database connection.
 - `stop()` - stops the reporter. Should be used for any tear down logic such as clearing time outs or disconnecting from a database.
-- `report(event, eventData)` - this is a stub method that implementations of `GoodReporter` *must* implement.
-- `_filter(event, eventData)` - _private_ method for filtering incoming events. Looks into `options.events` for a match on `event` and then further filters by the tags compared to `eventData.tags`. Returns `true` if the `event` + `[eventData.tags]` should be enqueued. You should never need to call `_filter` directly.
-- `_handleEvent(event, eventData)` - _private_ method used to handle events from the event emitter. If `_filter` returns `true`, the `report` method is called.
+- `_report(event, eventData)` - _private_ method that implementations of `GoodReporter` *must* implement. You should never call this method directly. It will be called when the proper event has been emitted from the supplied event emitter.
+- `_filter(event, eventData)` - _private_ method for filtering incoming events. Looks into `options.events` for a match on `event` and then further filters by the tags compared to `eventData.tags`. Returns `true` if the `event` + `[eventData.tags]` should be reporter. You should never need to call `_filter` directly.
+- `_handleEvent(event, eventData)` - _private_ method used to handle events from the event emitter. If `_filter` returns `true`, the `_report` method is called.
 - `_register` - _private_ method used to set up event handlers for events this reporter cares about.
 
 ## Examples
