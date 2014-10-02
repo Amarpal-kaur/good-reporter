@@ -20,18 +20,16 @@ creates a new GoodReporter object with the following arguments
 		- `value` - an array of tags to filter incoming events. "*" indicates no filtering.
 
 ### `GoodReporter` methods
-- `start(callback)` - starts the reporter. Any "run once" logic should be in the start method. For example, creating a database connection.
-- `stop(callback)` - stops the reporter. Should be used for any tear down logic such as clearing time outs or disconnecting from a database.
+- `start(eventemitter, callback)` - starts the reporter and registers for the correct events emitted by the supplied event emitter. Any "run once" logic should be in the start method. For example, creating a database connection.
+- `stop()` - stops the reporter. Should be used for any tear down logic such as clearing time outs or disconnecting from a database.
+- `report(event, eventData)` - this is a stub method that implementations of `GoodReporter` *must* implement.
 - `_filter(event, eventData)` - _private_ method for filtering incoming events. Looks into `options.events` for a match on `event` and then further filters by the tags compared to `eventData.tags`. Returns `true` if the `event` + `[eventData.tags]` should be enqueued. You should never need to call `_filter` directly.
-- `queue(event, eventData)` - adds `eventData` to the internal event queue (`_events`) if `_filter` returns `true`.
+- `_handleEvent(event, eventData)` - _private_ method used to handle events from the event emitter. If `_filter` returns `true`, the `report` method is called.
+- `_register` - _private_ method used to set up event handlers for events this reporter cares about.
 
 ## Examples
 
-Every new reporter *must* implement:
-
-1. A `report(callback)` method. This is where the logic of exactly how this reporter moves data from the internal event queue to a destination lives. Execute the callback at the end of processing. Unless you want to continue to rebroadcast the same events, empty the event queue before running `callback`.
-
-Everything else can be optional depending on the specific transmission method of `report`.
+Every new reporter *must* implement a `report()` method. This is where the logic of exactly how this reporter moves data from the received events to the destination. Everything else can be optional depending on the specific transmission method of `report`.
 
 ### "One Off" object
 
@@ -39,20 +37,28 @@ Below is a simple "one off" good-reporter object.
 
 ```javascript
 var GoodReporter = require('good-reporter');
+var EventEmitter = require('events').EventEmitter;
 
 var reporter = new GoodReporter();
-reporter.report = function (callback) {
-	for (var i = 0, il = this._events.length; i < il; ++i) {
+var ee = new EventEmitter();
+reporter.report = function (event, eventData) {
 
- 		var event = this._events[i];
-		console.info(JSON.parse(event));
-	}
+    if (event === 'request') {
+        console.info(eventData.method);
+    } else if (event === 'ops') {
+        console.info(JSON.parse(event));
+    }
 };
+reporter.start(ee, function (err) {
+
+    ee.emit('request', 'request', { method: 'post' } );
+});
+}
 ```
 
 ### Reusable Reporter
 
-If you are looking to create a custom and reusable reporter for [good](https://github.com/hapijs/good), your new object needs to inherit from `good-reporter`. You will also need to implement a `report(callback)` as well.
+If you are looking to create a custom and reusable reporter for [good](https://github.com/hapijs/good), your new object needs to inherit from `good-reporter`. You will also need to implement `report(event, eventData)` as well.
 
 ```javascript
 var GoodReporter = require('good-reporter');
@@ -70,16 +76,30 @@ module.exports = internals.GoodTwitter = function (options) {
 
 Hoek.inherits(internals.GoodFile, GoodTwitter);
 
-internals.GoodTwitter.prototype.stop = function (callback) {
+internals.GoodTwitter.prototype.start = function (emitter, callback) {
+
+    this._register(emitter, this._events);
+    // Open a socket to the Twitter API
+    Tweet.open('https://twitter.com/hapijs', function (err, result) {
+
+        this._connection = result;
+        return callback(err);
+    });
+};
+
+internals.GoodTwitter.prototype.stop = function () {
 
 	// Send a final Tweet for the day, then close the open connection
-	callback(null);
+	this._connection.send(this._hashTag + ' signing off for the day.', function (err) {
+
+	    this._connection.close();
+	});
 };
 
 
-internals.GoodTwitter.prototype.report = function (callback) {
-	// Post your good logs to your twitter account
-	callback(null);
+internals.GoodTwitter.prototype.report = function (event, eventData) {
+
+	this._connection.send(JSON.parse(eventData) + ' ' + this._hashTag);
 };
 ```
 

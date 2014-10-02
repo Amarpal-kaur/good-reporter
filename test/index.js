@@ -52,12 +52,8 @@ it('provides a stop function', function (done) {
 
     var reporter = new GoodReporter();
     expect(reporter.stop).to.exist;
-
-    reporter.stop(function (error) {
-
-        expect(error).to.not.exist;
-        done();
-    });
+    expect(reporter.stop()).to.equal(undefined);
+    done();
 });
 
 it('converts non-array values to empty tag arrays', function (done) {
@@ -184,7 +180,7 @@ describe('report()', function () {
 
 });
 
-describe('handleEvent()', function() {
+describe('_handleEvent()', function() {
 
     it('runs when a matching event is emitted', function (done) {
 
