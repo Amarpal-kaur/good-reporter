@@ -8,10 +8,10 @@
         "test": "make test-cov"
     },
     "dependencies": {
-        "hoek": "~2.4.x"
+        "hoek": "2.x.x"
     },
     "devDependencies": {
-        "lab": "~4.3.x"
+        "lab": "4.x.x"
     },
     "engines": {
         "node": ">=0.10.x"
