@@ -8,7 +8,7 @@ Lead Maintainer: [Adam Bretz](https://github.com/arb)
 
 ## Usage
 
-This is an abstraction module for implementing reporters for the [good](https://github.com/hapijs/good) process monitor plugin. It is generally used as a base object and varioues methods are over written for different reporters.
+This is an abstraction module for implementing reporters for the [good](https://github.com/hapijs/good) process monitor plugin. It is generally used as a base object and various methods are over written for different reporters.
 
 ## Good Reporter
 ### new GoodReporter ([options])
@@ -20,11 +20,11 @@ creates a new GoodReporter object with the following arguments
 		- `value` - an array of tags to filter incoming events. "*" indicates no filtering.
 
 ### `GoodReporter` methods
-- `start(eventemitter, callback)` - starts the reporter and registers for the correct events emitted by the supplied event emitter. Any "run once" logic should be in the start method. For example, creating a database connection.
+- `start(eventemitter, callback)` - starts the reporter and registers for the correct events emitted by the supplied event emitter. Any "run once" logic should be in the start method. For example, creating a database connection. If you need to override this function, you will need to register for the "report" event yourself and `bind` to `_handleEvent`. See the example below.
 - `stop()` - stops the reporter. Should be used for any tear down logic such as clearing time outs or disconnecting from a database.
 - `_report(event, eventData)` - _private_ method that implementations of `GoodReporter` *must* implement. You should never call this method directly. It will be called when the proper event has been emitted from the supplied event emitter.
-- `_filter(event, eventData)` - _private_ method for filtering incoming events. Looks into `options.events` for a match on `event` and then further filters by the tags compared to `eventData.tags`. Returns `true` if the `event` + `[eventData.tags]` should be reporter. You should never need to call `_filter` directly.
-- `_handleEvent(event, eventData)` - _private_ method used to handle events from the event emitter. If `_filter` returns `true`, the `_report` method is called.
+- `_filter(event, eventData)` - _private_ method for filtering incoming events. Looks into `options.events` for a match on `event` and then further filters by the tags compared to `eventData.tags`. Returns `true` if the `event` + `[eventData.tags]` should be reported. You should never need to call `_filter` directly unless you need to over write any of the methods that use it.
+- `_handleEvent(event, eventData)` - _private_ method used to handle incoming "report" events from the event emitter. If `_filter` returns true, `_report` will be called.
 - `_register` - _private_ method used to set up event handlers for events this reporter cares about.
 
 ## Examples
@@ -53,7 +53,6 @@ reporter.start(ee, function (err) {
 
     ee.emit('request', 'request', { method: 'post' } );
 });
-}
 ```
 
 ### Reusable Reporter
@@ -78,7 +77,8 @@ Hoek.inherits(internals.GoodFile, GoodTwitter);
 
 internals.GoodTwitter.prototype.start = function (emitter, callback) {
 
-    this._register(emitter, this._events);
+    // Register for the "report" event
+    emitter.on('report', this._handleEvent.bind(this));
     // Open a socket to the Twitter API
     Tweet.open('https://twitter.com/hapijs', function (err, result) {
 
