@@ -212,10 +212,10 @@ describe('_handleEvent()', function() {
 
             expect(err).to.not.exist;
 
-            ee.emit('request','request', { data:'request data' });
-            ee.emit('ops','ops', { data:'ops data' });
-            ee.emit('log','log', { data:'log data' });
-            ee.emit('error','error', { data:'error data' });
+            ee.emit('report','request', { data:'request data' });
+            ee.emit('report','ops', { data:'ops data' });
+            ee.emit('report','log', { data:'log data' });
+            ee.emit('report','error', { data:'error data' });
         });
 
     });
@@ -239,7 +239,7 @@ describe('_handleEvent()', function() {
             expect(err).to.not.exist;
 
             expect(function() {
-                ee.emit('request','request', { data:'request data' });
+                ee.emit('report','request', { data:'request data' });
             }).to.not.throw('report called.');
             done();
         });
