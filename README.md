@@ -16,7 +16,7 @@ This is an abstraction module for implementing reporters for the [good](https://
 creates a new GoodReporter object with the following arguments
 - `events` - an object of key value pairs.
 	- `key` - one of the supported [good events](https://github.com/hapijs/good) indicating the hapi event to subscribe to
-	- `value` - a single string or an array of strings to filter incoming events. "*" indicates no filtering. `null` and `undefined` are assumed to be "*"
+	- `value` - a single string or an array of strings to filter incoming events. "\*" indicates no filtering. `null` and `undefined` are assumed to be "\*"
 - `[options]` - optional arguments object
 
 ### `GoodReporter` methods
