@@ -41,9 +41,9 @@ describe('GoodReporter', function() {
         done();
     });
 
-    it('converts *, null, and undefined to an empty array, indicating all tags are acceptable', function (done) {
+    it('converts *, null, undefined, 0, and false to an empty array, indicating all tags are acceptable', function (done) {
 
-        var tags = ['*', null, undefined];
+        var tags = ['*', null, undefined, false, 0];
         for (var i = 0, il = tags.length; i < il; ++i) {
 
             var reporter = new GoodReporter({
@@ -147,7 +147,7 @@ describe('GoodReporter', function() {
                }
            });
 
-            expect(reporter._filter('request',{})).to.equal(false);
+            expect(reporter._filter('request', {})).to.equal(false);
             done();
         });
     });
@@ -218,10 +218,10 @@ describe('GoodReporter', function() {
 
                 expect(err).to.not.exist;
 
-                ee.emit('report','request', { data: 'request data' });
-                ee.emit('report','ops', { data: 'ops data' });
-                ee.emit('report','log', { data: 'log data' });
-                ee.emit('report','error', { data: 'error data' });
+                ee.emit('report', 'request', { data: 'request data' });
+                ee.emit('report', 'ops', { data: 'ops data' });
+                ee.emit('report', 'log', { data: 'log data' });
+                ee.emit('report', 'error', { data: 'error data' });
             });
 
         });
@@ -243,7 +243,7 @@ describe('GoodReporter', function() {
                 expect(err).to.not.exist;
 
                 expect(function() {
-                    ee.emit('report','request', { data:'request data' });
+                    ee.emit('report', 'request', { data:'request data' });
                 }).to.not.throw('report called.');
                 done();
             });
