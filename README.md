@@ -44,7 +44,7 @@ var reporter = new GoodReporter({
     ops: '*'
 });
 var ee = new EventEmitter();
-reporter.report = function (event, eventData) {
+reporter._report = function (event, eventData) {
 
     if (event === 'request') {
         console.info(eventData.method);
@@ -100,7 +100,7 @@ internals.GoodTwitter.prototype.stop = function () {
 };
 
 
-internals.GoodTwitter.prototype.report = function (event, eventData) {
+internals.GoodTwitter.prototype._report = function (event, eventData) {
 
 	this._connection.send(JSON.parse(eventData) + ' ' + this._hashTag);
 };
