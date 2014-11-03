@@ -41,20 +41,28 @@ describe('GoodReporter', function() {
         done();
     });
 
-    it('converts non-array values to empty tag arrays', function (done) {
+    it('converts *, null, and undefined to an empty array, indicating all tags are acceptable', function (done) {
 
-        var tagValues = [null, '*', 'none', 5];
-
-        for (var i = 0, il = tagValues.length; i < il; ++i) {
-            var tag = tagValues[i];
+        var tags = ['*', null, undefined];
+        for (var i = 0, il = tags.length; i < il; ++i) {
 
             var reporter = new GoodReporter({
-                error: tag
+                error: tags[i]
             });
 
             expect(reporter._events.error).to.deep.equal([]);
         }
 
+        done();
+    });
+
+    it('converts a single tag to an array', function (done) {
+
+        var reporter = new GoodReporter({
+            error: 'hapi'
+        });
+
+        expect(reporter._events.error).to.deep.equal(['hapi']);
         done();
     });
 
@@ -109,7 +117,7 @@ describe('GoodReporter', function() {
         it('returns false if the subscriber has tags, but the matched event does not have any', function (done) {
 
             var reporter = new GoodReporter({
-                error: ['db']
+                error: 'db'
             });
 
             expect(reporter._filter('error', {
@@ -135,7 +143,7 @@ describe('GoodReporter', function() {
 
            var reporter = new GoodReporter({
                events: {
-                   request: ['hapi']
+                   request: 'hapi'
                }
            });
 
@@ -178,7 +186,7 @@ describe('GoodReporter', function() {
             var hash = {
                 1:{
                     name: 'request',
-                    value: {data:'request data'}
+                    value: { data:'request data' }
                 },
                 2: {
                     name: 'ops',
@@ -210,10 +218,10 @@ describe('GoodReporter', function() {
 
                 expect(err).to.not.exist;
 
-                ee.emit('report','request', { data:'request data' });
-                ee.emit('report','ops', { data:'ops data' });
-                ee.emit('report','log', { data:'log data' });
-                ee.emit('report','error', { data:'error data' });
+                ee.emit('report','request', { data: 'request data' });
+                ee.emit('report','ops', { data: 'ops data' });
+                ee.emit('report','log', { data: 'log data' });
+                ee.emit('report','error', { data: 'error data' });
             });
 
         });
@@ -222,7 +230,7 @@ describe('GoodReporter', function() {
 
 
             var reporter = new GoodReporter({
-                request: ['user']
+                request: 'user'
             });
             var ee = new EventEmitter();
 

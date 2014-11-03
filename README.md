@@ -11,13 +11,13 @@ Lead Maintainer: [Adam Bretz](https://github.com/arb)
 This is an abstraction module for implementing reporters for the [good](https://github.com/hapijs/good) process monitor plugin. It is generally used as a base object and various methods are over written for different reporters.
 
 ## Good Reporter
-### new GoodReporter ([options])
+### new GoodReporter (events, [options])
 
 creates a new GoodReporter object with the following arguments
+- `events` - an object of key value pairs.
+  		- `key` - one of the supported [good events](https://github.com/hapijs/good) indicating the hapi event to subscribe to
+  		- `value` - a single string or an array of strings to filter incoming events. "*" indicates no filtering. `null` and `undefined` are assumed to be "*"
 - `[options]` - optional arguments object
-	- `[events]` - an object of key value pairs. Defaults to `{ request: "*", log: "*" }` meaning `request` and `log` events with no tag filtering.
-		- `key` - one of ("request", "log", "error", or "ops") indicating the hapi event to subscribe to
-		- `value` - an array of tags to filter incoming events. "*" indicates no filtering.
 
 ### `GoodReporter` methods
 - `start(eventemitter, callback)` - starts the reporter and registers for the correct events emitted by the supplied event emitter. Any "run once" logic should be in the start method. For example, creating a database connection. If you need to override this function, you will need to register for the "report" event yourself and `bind` to `_handleEvent`. See the example below.
@@ -39,7 +39,10 @@ Below is a simple "one off" good-reporter object.
 var GoodReporter = require('good-reporter');
 var EventEmitter = require('events').EventEmitter;
 
-var reporter = new GoodReporter();
+var reporter = new GoodReporter({
+    request: '*',
+    ops: '*'
+});
 var ee = new EventEmitter();
 reporter.report = function (event, eventData) {
 
@@ -65,9 +68,9 @@ var Util = require('util');
 
 var internals = {};
 
-module.exports = internals.GoodTwitter = function (options) {
+module.exports = internals.GoodTwitter = function (events, options) {
 
-	GoodReporter.call(this, options);
+	GoodReporter.call(this, events);
 
 	this._hashTag = "#goodlogs";
 	this._account = "hapijs";
