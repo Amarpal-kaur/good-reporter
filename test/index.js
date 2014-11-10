@@ -1,3 +1,4 @@
+var Code = require('code');
 var EventEmitter = require('events').EventEmitter;
 var Lab = require('lab');
 var lab = exports.lab = Lab.script();
@@ -5,7 +6,7 @@ var GoodReporter = require('..');
 
 var describe = lab.describe;
 var it = lab.it;
-var expect = Lab.expect;
+var expect = Code.expect;
 
 describe('GoodReporter', function() {
 
@@ -24,11 +25,11 @@ describe('GoodReporter', function() {
         var reporter = new GoodReporter();
         var ee = new EventEmitter();
 
-        expect(reporter.start).to.exist;
+        expect(reporter.start).to.exist();
 
         reporter.start(ee, function (error) {
 
-            expect(error).to.not.exist;
+            expect(error).to.not.exist();
             done();
         });
     });
@@ -36,7 +37,7 @@ describe('GoodReporter', function() {
     it('provides a stop function', function (done) {
 
         var reporter = new GoodReporter();
-        expect(reporter.stop).to.exist;
+        expect(reporter.stop).to.exist();
         expect(reporter.stop()).to.equal(undefined);
         done();
     });
@@ -216,7 +217,7 @@ describe('GoodReporter', function() {
 
             reporter.start(ee, function (err) {
 
-                expect(err).to.not.exist;
+                expect(err).to.not.exist();
 
                 ee.emit('report', 'request', { data: 'request data' });
                 ee.emit('report', 'ops', { data: 'ops data' });
@@ -240,11 +241,11 @@ describe('GoodReporter', function() {
             };
 
             reporter.start(ee, function (err) {
-                expect(err).to.not.exist;
+                expect(err).to.not.exist();
 
                 expect(function() {
                     ee.emit('report', 'request', { data:'request data' });
-                }).to.not.throw('report called.');
+                }).to.not.throw();
                 done();
             });
         });
